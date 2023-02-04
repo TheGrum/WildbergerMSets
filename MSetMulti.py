@@ -189,6 +189,17 @@ class MSet:
         else:
             return self.__add__(MS(str(value)))
 
+    def __radd__(self, value):
+        if isinstance(value, MSet):
+            cur = MSet()
+            cur.append(self.raw)
+            cur.append(value.raw)
+            return cur
+        elif isinstance(value, int):
+            return self.__add__(MS(str(value)))
+        else:
+            return self.__add__(MS(str(value)))
+
     def __mul__(self, value):
         if isinstance(value, MSet):
             cur = MSet()
@@ -270,17 +281,43 @@ class MSet:
             return cur
         else:
             raise Exception("Impure MSet")
-        
+
+# Canonical - shorthand to get canonical formatting        
 def C(value):
     if isinstance(value,MSet):
         return value.canonical()
     else:
         return str(value)
 
+# Format Base - same as Str()
+def FB(value):
+    return str(value)
+
+# Format Zero - show [] as 0
+def FZ(value):
+    return str(value).replace("[]","0")
+
+# Format Natural - show Natural numbers
+def FN(value):
+    if isinstance(value,MSet):
+        s = "["
+        if len(value.raw) == 0:
+            return "0"
+        if value.depth==1:
+            return str(len(value.raw))
+        for M in value.raw:
+            s += FN(M) + ' '
+        s += ']'
+        return s.replace(' ]',']')
+    else:
+        return str(value)
+
+α = MSet(MSet(MSet()))
+
 if __name__=="__main__":    
     z = MSet()
     n = MSet(MSet())
-    α = MSet(MSet(MSet()))
+    #α = MSet(MSet(MSet()))
     
     B = MS("[[2 [4]] [0 1 1] [[0][2]]]")
     print(f"B={C(B)}")
